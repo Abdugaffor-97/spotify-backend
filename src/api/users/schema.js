@@ -7,6 +7,28 @@ const userSchema = new Schema({
   password: { type: String, required: true },
 });
 
+userSchema.methods.toJSON = function () {
+  const user = this;
+  const userObj = user.toObject();
+
+  delete userObj.password;
+  delete userObj.__v;
+
+  return userObj;
+};
+
+userSchema.statics.findByEmail = async function (email, plainPW) {
+  const user = await this.findOne({ email });
+
+  if (user) {
+    const isMatch = await bcrypt.compare(plainPW, user.password);
+
+    if (isMatch) return user;
+    return null;
+  }
+  return null;
+};
+
 userSchema.pre("save", async function (next) {
   const user = this;
   const plainPW = user.password;
