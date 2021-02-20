@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const listEndpoints = require("express-list-endpoints");
 const mongoose = require("mongoose");
+const api = require("./api");
 
 const {
   notFoundHandler,
@@ -29,13 +30,15 @@ app.use(cors(corsOptions));
 app.use(express.json());
 // app.use(passport.initialize())
 
+app.use("/api", api);
+
 // ERROR HANDLERS
 app.use(notFoundHandler);
 app.use(forbiddenHandler);
 app.use(badRequestHandler);
 app.use(genericErrorHandler);
 
-console.log(listEndpoints);
+console.log(listEndpoints(app));
 
 const port = process.env.PORT || 3004;
 const mongo_connection = process.env.MONGO_CONNECTION;
@@ -46,5 +49,5 @@ mongoose
     useCreateIndex: true,
     useUnifiedTopology: true,
   })
-  .then(app.listen(port, () => console.log(port)))
-  .catch((error) => console.log(err));
+  .then(app.listen(port, () => console.log("PORT", port)))
+  .catch((error) => console.log(error));
