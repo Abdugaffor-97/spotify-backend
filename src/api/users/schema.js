@@ -17,7 +17,7 @@ userSchema.methods.toJSON = function () {
   return userObj;
 };
 
-userSchema.statics.findByEmail = async function (email, plainPW) {
+userSchema.statics.findByEmailAndPassword = async function (email, plainPW) {
   const user = await this.findOne({ email });
 
   if (user) {

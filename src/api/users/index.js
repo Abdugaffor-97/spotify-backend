@@ -1,7 +1,29 @@
 const UserModel = require("./schema");
 const userRouter = require("express").Router();
+const userAuthorization = require("../../auth/middleware");
+const { getTokens } = require("../../auth");
 
-userRouter.get("/me", async (req, res, next) => {
+userRouter.post("/login", async (req, res, next) => {
+  const { email, password } = req.body;
+
+  const user = await UserModel.findByEmailAndPassword(email, password);
+
+  // Generate and save in to bd tokens
+  const { accessToken, refreshToken } = await getTokens(user);
+
+  // Send back tokens
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+  });
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+  });
+
+  res.status(200).send(user);
+});
+
+userRouter.get("/me", userAuthorization, async (req, res, next) => {
   try {
     res.send(req.user);
   } catch (error) {
