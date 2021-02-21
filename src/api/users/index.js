@@ -1,7 +1,7 @@
 const UserModel = require("./schema");
 const userRouter = require("express").Router();
 const userAuthorization = require("../../auth/middleware");
-const { getTokens } = require("../../auth");
+const { getTokens, updateTokens } = require("../../auth");
 
 userRouter.post("/login", async (req, res, next) => {
   try {
@@ -72,7 +72,7 @@ userRouter.get("/refreshToken", async (req, res, next) => {
 
     // Verify the refToken
 
-    const { accessToken, refreshToken } = await refreshTokens(oldRefreshToken);
+    const { accessToken, refreshToken } = await updateTokens(oldRefreshToken);
 
     res.cookie("accessToken", accessToken);
     res.cookie("refreshToken", refreshToken);
