@@ -2,18 +2,17 @@ const jwt = require("jsonwebtoken");
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
-const generateToken = (payload, secret, time) => {
+const generateToken = (payload, privateKey, time) =>
   new Promise((resolve, reject) =>
-    jwt.sign(payload, secret, { expiresIn: time }, (err, token) => {
+    jwt.sign(payload, privateKey, { expiresIn: time }, (err, token) => {
       if (err) reject(err);
       resolve(token);
     })
   );
-};
 
-const verifyToken = (token, secret) =>
+const verifyToken = (token, privateKey) =>
   new Promise((resolve, reject) =>
-    jwt.verify(token, secret, (err, decoded) => {
+    jwt.verify(token, privateKey, (err, decoded) => {
       if (err) reject(err);
       resolve(decoded);
     })
@@ -22,12 +21,13 @@ const verifyToken = (token, secret) =>
 const getTokens = async (user) => {
   try {
     // create tokens
-    const accessToken = generateToken(
+    const accessToken = await generateToken(
       { _id: user._id },
       ACCESS_TOKEN_SECRET,
       "30m"
     );
-    const refreshToken = generateToken(
+
+    const refreshToken = await generateToken(
       { _id: user._id },
       REFRESH_TOKEN_SECRET,
       "1 week"
