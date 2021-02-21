@@ -64,6 +64,23 @@ userRouter.post("/register", async (req, res, next) => {
   }
 });
 
+userRouter.get("/refreshToken", async (req, res, next) => {
+  try {
+    console.log(req.cookies);
+
+    const oldRefreshToken = req.cookies.refreshToken;
+
+    // Verify the refToken
+
+    const { accessToken, refreshToken } = await refreshTokens(oldRefreshToken);
+
+    res.cookie("accessToken", accessToken);
+    res.cookie("refreshToken", refreshToken);
+  } catch (error) {
+    next(error);
+  }
+});
+
 userRouter.get("/", async (req, res, next) => {
   const users = await UserModel.find();
   res.send(users);
