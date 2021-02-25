@@ -22,6 +22,7 @@ const verifyToken = (token, privateKey) =>
 const getTokens = async (user) => {
   try {
     // create tokens
+
     const accessToken = await generateToken(
       { _id: user._id },
       ACCESS_TOKEN_SECRET,
@@ -34,10 +35,6 @@ const getTokens = async (user) => {
       "1 week"
     );
 
-    // Save new refresh token to db
-    user.refreshTokens = user.refreshTokens.concat({ token: refreshToken });
-    await user.save();
-
     return { refreshToken, accessToken };
   } catch (error) {
     throw new Error();
@@ -46,16 +43,7 @@ const getTokens = async (user) => {
 
 const updateTokens = async (oldRefreshToken) => {
   try {
-    const decoded = await verifyToken(oldRefreshToken, REFRESH_TOKEN_SECRET);
-
-    // Check old refresh token is in db
-    const user = await UserModel.findById(decoded._id);
-
-    const currentRefreshToken = user.refreshTokens.find(
-      (token) => token.token === oldRefreshToken
-    );
-
-    if (!currentRefreshToken) throw new Error("Refresh Token Not Exists");
+    // const decoded = await verifyToken(oldRefreshToken, REFRESH_TOKEN_SECRET);
 
     const newAccessToken = await generateToken(
       { _id: user._id },
@@ -66,14 +54,6 @@ const updateTokens = async (oldRefreshToken) => {
       REFRESH_TOKEN_SECRET,
       "2 week"
     );
-
-    const newRefreshTokensList = user.refreshTokens
-      .filter((token) => token.token !== oldRefreshToken)
-      .concat({ token: newRefreshToken });
-
-    user.refreshTokens = [...newRefreshTokensList];
-
-    await user.save();
 
     return { accessToken: newAccessToken, refreshToken: newRefreshToken };
   } catch (error) {

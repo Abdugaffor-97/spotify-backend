@@ -5,13 +5,6 @@ const userSchema = new Schema({
   username: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  refreshTokens: [
-    {
-      token: {
-        type: String,
-      },
-    },
-  ],
 });
 
 userSchema.methods.toJSON = function () {
@@ -20,7 +13,6 @@ userSchema.methods.toJSON = function () {
 
   delete userObj.password;
   delete userObj.__v;
-  delete userObj.refreshTokens;
 
   return userObj;
 };
