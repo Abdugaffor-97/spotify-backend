@@ -3,6 +3,8 @@ const cors = require("cors");
 const listEndpoints = require("express-list-endpoints");
 const mongoose = require("mongoose");
 const api = require("./api");
+const passport = require("passport");
+const oauth = require("./auth/oauth");
 
 const {
   notFoundHandler,
@@ -28,7 +30,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
-// app.use(passport.initialize())
+app.use(passport.initialize());
 
 app.use("/api", api);
 
@@ -40,7 +42,7 @@ app.use(genericErrorHandler);
 
 console.log(listEndpoints(app));
 
-const port = process.env.PORT || 3004;
+const port = process.env.PORT || 3001;
 const mongo_connection = process.env.MONGO_CONNECTION;
 
 mongoose

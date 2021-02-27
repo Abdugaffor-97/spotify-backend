@@ -1,5 +1,5 @@
 const { verifyToken } = require(".");
-const UserModel = require("../api/users/schema");
+const UserModel = require("../models/userModel.js.js");
 const { ACCESS_TOKEN_SECRET } = process.env;
 
 const userAuthorization = async (req, res, next) => {

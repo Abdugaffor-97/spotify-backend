@@ -1,7 +1,8 @@
-const UserModel = require("./schema");
+const UserModel = require("../../models/userModel.js.js");
 const userRouter = require("express").Router();
 const userAuthorization = require("../../auth/middleware");
 const { getTokens, updateTokens } = require("../../auth");
+const passport = require("passport");
 
 userRouter.post("/login", async (req, res, next) => {
   try {
@@ -66,12 +67,9 @@ userRouter.get("/refreshToken", async (req, res, next) => {
 
     const oldRefreshToken = req.cookies.refreshToken;
 
-    // Verify the refToken
+    const updatedTokens = await updateTokens(oldRefreshToken);
 
-    const { accessToken, refreshToken } = await updateTokens(oldRefreshToken);
-
-    // res.cookie("accessToken", accessToken);
-    // res.cookie("refreshToken", refreshToken);
+    res.send(updatedTokens);
   } catch (error) {
     next(error);
   }
@@ -81,5 +79,24 @@ userRouter.get("/", async (req, res, next) => {
   const users = await UserModel.find();
   res.send(users);
 });
+
+userRouter.get(
+  "/google-login",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+userRouter.get(
+  "/google-redirect",
+  passport.authenticate("google"),
+  async (req, res, next) => {
+    try {
+      const tokenPairs = await getTokens(req.user);
+
+      res.status(200).send(tokenPairs).redirect(process.env.FE_URL);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 module.exports = userRouter;

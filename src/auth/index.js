@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
-const UserModel = require("../api/users/schema");
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+const UserModel = require("../models/userModel.js.js");
+const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = process.env;
 
 const generateToken = (payload, privateKey, time = "1 week") =>
   new Promise((resolve, reject) =>
