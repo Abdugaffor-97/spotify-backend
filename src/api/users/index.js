@@ -6,21 +6,17 @@ const { getTokens, updateTokens } = require("../../auth");
 userRouter.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
+
     const user = await UserModel.findByEmailAndPassword(email, password);
-    if (!user) throw Error();
+    if (!user) throw Error("User not found");
+    // console.log(user);
 
     // Generate and save in to bd tokens
-    const { accessToken, refreshToken } = await getTokens(user);
+    const tokenPairs = await getTokens(user);
 
     // Send back tokens
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-    });
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-    });
 
-    res.status(200).send(user);
+    res.status(200).send(tokenPairs);
   } catch (error) {
     next(error);
   }
@@ -74,8 +70,8 @@ userRouter.get("/refreshToken", async (req, res, next) => {
 
     const { accessToken, refreshToken } = await updateTokens(oldRefreshToken);
 
-    res.cookie("accessToken", accessToken);
-    res.cookie("refreshToken", refreshToken);
+    // res.cookie("accessToken", accessToken);
+    // res.cookie("refreshToken", refreshToken);
   } catch (error) {
     next(error);
   }

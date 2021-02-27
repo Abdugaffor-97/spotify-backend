@@ -46,8 +46,8 @@ const mongo_connection = process.env.MONGO_CONNECTION;
 mongoose
   .connect(mongo_connection, {
     useNewUrlParser: true,
-    useCreateIndex: true,
     useUnifiedTopology: true,
+    useCreateIndex: true,
   })
   .then(app.listen(port, () => console.log("PORT", port)))
   .catch((error) => console.log(error));
