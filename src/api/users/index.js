@@ -9,15 +9,18 @@ userRouter.post("/login", async (req, res, next) => {
     const { email, password } = req.body;
 
     const user = await UserModel.findByEmailAndPassword(email, password);
-    if (!user) throw Error("User not found");
-    // console.log(user);
+    if (!user) {
+      res.status(401).send("Email or Password is not valid");
+    } else {
+      // console.log(user);
 
-    // Generate and save in to bd tokens
-    const tokenPairs = await getTokens(user);
+      // Generate and save in to bd tokens
+      const tokenPairs = await getTokens(user);
 
-    // Send back tokens
+      // Send back tokens
 
-    res.status(200).send(tokenPairs);
+      res.status(200).send(tokenPairs);
+    }
   } catch (error) {
     next(error);
   }
@@ -55,7 +58,7 @@ userRouter.delete("/me", userAuthorization, async (req, res, next) => {
 userRouter.post("/register", async (req, res, next) => {
   try {
     const { _id } = await UserModel.create(req.body);
-    res.send(_id);
+    res.send({ _id });
   } catch (error) {
     next(error);
   }
