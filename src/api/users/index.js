@@ -90,9 +90,11 @@ userRouter.get(
   passport.authenticate("google"),
   async (req, res, next) => {
     try {
-      const tokenPairs = await getTokens(req.user);
+      const { accessToken, refreshToken } = await getTokens(req.user);
 
-      res.status(200).send(tokenPairs).redirect(process.env.FE_URL);
+      res.redirect(
+        `${process.env.FE_URL}?accessToken=${accessToken}&refreshToken=${refreshToken}`
+      );
     } catch (error) {
       next(error);
     }

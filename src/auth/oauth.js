@@ -21,12 +21,12 @@ passport.use(
 
         if (!user) {
           user = await UserModel.create({
-            google_id: profile.id,
             username: profile.name.givenName,
             email: profile.emails[0].value,
           });
         }
 
+        user.update({ google_id: profile.id });
         next(null, user);
       } catch (error) {
         next(error);
